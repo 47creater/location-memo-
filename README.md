@@ -1,0 +1,2 @@
+# location-memo-
+offline
