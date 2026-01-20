@@ -1,0 +1,86 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+def keystoreStoreFile = keystoreProperties['storeFile']
+def keystoreStorePassword = keystoreProperties['storePassword']
+def keystoreKeyAlias = keystoreProperties['keyAlias']
+def keystoreKeyPassword = keystoreProperties['keyPassword']
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+android {
+    namespace = "com.example.location_memo"
+    compileSdkVersion 36
+    ndkVersion = "27.0.12077973"
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        applicationId = "com.example.location_memo"
+        minSdkVersion 24
+        targetSdkVersion 36
+        versionCode = flutterVersionCode.toInteger()
+        versionName = flutterVersionName
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+        }
+    }
+}
+
+afterEvaluate {
+    if (keystoreStoreFile) {
+        android.signingConfigs {
+            release {
+                storeFile file(keystoreStoreFile)
+                storePassword keystoreStorePassword
+                keyAlias keystoreKeyAlias
+                keyPassword keystoreKeyPassword
+            }
+        }
+        android.buildTypes.release.signingConfig = android.signingConfigs.release
+    }
+}
+
+flutter {
+    source = "../.."
+}
